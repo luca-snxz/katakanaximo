@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Katakana 46</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: hoja de práctica genkō (cuadrícula con guías en cruz); dos vistas, Tabla y Quiz, en una columna estrecha para móvil */
+:root{
+  --paper:#f2f4f3; --sheet:#fbfcfb; --ink:#1b2238; --muted:#5d6577;
+  --grid:#c6d6cc; --guide:#dfe8e2; --accent:#26408f; --accent-soft:#e3e8f6;
+  --ok:#2e7a4d; --ok-soft:#dcefe3; --bad:#b6372b; --bad-soft:#f6e0dc; --warn:#b98a1b;
+  --kana:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --ui:"Zen Kaku Gothic New","Hiragino Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11151f; --sheet:#171c29; --ink:#e7eaf3; --muted:#9aa2b6;
+  --grid:#2c3a35; --guide:#212b28; --accent:#93aaf5; --accent-soft:#1f2842;
+  --ok:#6cc792; --ok-soft:#183126; --bad:#f08a7c; --bad-soft:#3a1d1a; --warn:#e2b54a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11151f; --sheet:#171c29; --ink:#e7eaf3; --muted:#9aa2b6;
+  --grid:#2c3a35; --guide:#212b28; --accent:#93aaf5; --accent-soft:#1f2842;
+  --ok:#6cc792; --ok-soft:#183126; --bad:#f08a7c; --bad-soft:#3a1d1a; --warn:#e2b54a; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-family:var(--kana);font-weight:600;font-size:30px;line-height:1.1;letter-spacing:.01em}
+h1 small{display:block;font-family:var(--ui);font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.tabs{display:flex;background:var(--sheet);border:1px solid var(--grid);border-radius:10px;padding:3px}
+.tabs button{border:0;background:none;font:inherit;font-weight:500;color:var(--muted);padding:7px 16px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--sheet)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button,.chip{font:inherit;font-size:13px;border:1px solid var(--grid);background:var(--sheet);color:var(--ink);padding:5px 11px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"],.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+.label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.progress{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress b{color:var(--ink)}
+
+/* Tabla */
+.sheet{background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:10px 8px 12px}
+.grid{display:grid;grid-template-columns:22px repeat(5,1fr);gap:0}
+.colhead,.rowhead{font-size:11px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:.05em}
+.colhead{height:22px}
+.cell,.empty{aspect-ratio:1;border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);position:relative}
+.grid:not(.mix) > .cell:nth-child(6n+2),.grid:not(.mix) > .empty:nth-child(6n+2){border-left:1px solid var(--grid)}
+.grid:not(.mix) > :nth-child(n+7):nth-child(-n+12){border-top:1px solid var(--grid)}
+.grid.mix{grid-template-columns:repeat(5,1fr);border-left:1px solid var(--grid);border-top:1px solid var(--grid)}
+.hide-r .colhead,.hide-r .rowhead,.hide-k .colhead,.hide-k .rowhead{visibility:hidden}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-size:13px;font-weight:700;border:1.5px solid var(--accent);background:var(--accent);color:var(--sheet);padding:6px 14px;border-radius:999px;cursor:pointer}
+.btn.ghost{background:var(--sheet);color:var(--accent)}
+.summary{background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:20px 16px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.big{font-size:40px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:18px;color:var(--muted)}
+.fails{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.fails span{font-family:var(--kana);font-size:24px;border:1.5px solid var(--bad);color:var(--bad);background:var(--bad-soft);border-radius:6px;padding:2px 8px;line-height:1.2}
+.fails span small{font-family:var(--ui);font-size:11px;display:block;font-weight:500}
+.empty{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--guide) 6px 7px)}
+.cell{appearance:none;font:inherit;color:inherit;width:100%;padding:0;cursor:pointer;
+  background:linear-gradient(var(--guide),var(--guide)) center/1px 100% no-repeat,linear-gradient(var(--guide),var(--guide)) center/100% 1px no-repeat,var(--sheet);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.cell .k{font-family:var(--kana);font-size:clamp(24px,8vw,34px);line-height:1.05}
+.cell .r{font-size:12px;color:var(--muted);font-weight:500}
+.cell .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:transparent}
+.dot.l1{background:var(--bad)} .dot.l2{background:var(--warn)} .dot.l3{background:var(--ok)}
+.hide-r .cell:not(.shown) .r,.hide-k .cell:not(.shown) .k{visibility:hidden}
+.hide-k .cell:not(.shown){background-color:var(--sheet)}
+.hide-k .cell:not(.shown) .r{font-size:15px;color:var(--ink);position:absolute}
+.cell.shown{background-color:var(--accent-soft)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.hint{font-size:13px;color:var(--muted);margin:0}
+
+/* Quiz */
+.card{background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:18px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.prompt{width:150px;height:150px;border:1.5px solid var(--grid);position:relative;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(var(--guide),var(--guide)) center/1px 100% no-repeat,linear-gradient(var(--guide),var(--guide)) center/100% 1px no-repeat}
+.prompt span{font-family:var(--kana);font-size:96px;line-height:1}
+.prompt.roma span{font-family:var(--ui);font-weight:700;font-size:56px}
+.ask{font-size:13px;color:var(--muted);margin:-6px 0 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.opt{font:inherit;font-size:22px;font-weight:700;padding:14px 8px;border-radius:8px;border:1.5px solid var(--grid);background:var(--paper);color:var(--ink);cursor:pointer;transition:transform .08s}
+.opt.kana{font-family:var(--kana);font-weight:600;font-size:34px;padding:8px}
+.opt:active{transform:scale(.97)}
+.opt.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.opt:disabled{cursor:default}
+.feedback{min-height:22px;font-size:14px;font-weight:500;text-align:center}
+.feedback.ok{color:var(--ok)} .feedback.bad{color:var(--bad)}
+.score{display:flex;gap:18px;justify-content:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.score b{color:var(--ink);font-size:15px}
+.rows{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--kana);font-size:16px;padding:3px 10px}
+.links{display:flex;gap:12px;font-size:13px}
+.linkbtn{border:0;background:none;color:var(--accent);font:inherit;font-size:13px;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.danger{color:var(--bad)}
+.nojs{background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);border-radius:8px;padding:10px 12px;font-size:14px}
+@supports not (aspect-ratio:1){.cell,.empty{height:58px}}
+section[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.opt{transition:none}}
+</style>
+<style>html{color-scheme:light dark}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="nojs" id="nojs">Estás en una vista previa: la tabla se ve, pero los botones y el quiz solo funcionan abriendo la página en un navegador (Safari o Chrome).</div>
+  <header>
+    <h1>カタカナ 46<small>Practicar katakana</small></h1>
+    <div class="tabs" role="tablist">
+      <button id="tab-tabla" role="tab" aria-selected="true">Tabla</button>
+      <button id="tab-quiz" role="tab" aria-selected="false">Quiz</button>
+    </div>
+  </header>
+
+  <section id="v-tabla" class="wrap" style="gap:12px">
+    <div class="bar">
+      <div class="seg" id="hideSeg">
+        <button data-h="" aria-pressed="true">Ver todo</button>
+        <button data-h="r">Tapar romaji</button>
+        <button data-h="k">Tapar kana</button>
+      </div>
+      <div class="progress" id="mastered"></div>
+    </div>
+    <div class="bar">
+      <div class="seg" id="orderSeg">
+        <button data-o="tabla" aria-pressed="true">En orden</button>
+        <button data-o="mix">Desordenada</button>
+      </div>
+      <div class="tools">
+        <button class="btn" id="shuffle" hidden>Barajar otra vez</button>
+        <button class="btn ghost" id="coverAll" hidden>Tapar todo</button>
+      </div>
+    </div>
+    <div class="sheet">
+      <div class="grid" id="grid"><div></div><div class="colhead">a</div><div class="colhead">i</div><div class="colhead">u</div><div class="colhead">e</div><div class="colhead">o</div><div class="rowhead"></div><button class="cell" data-k="ア" aria-label="ア a"><span class="dot l0"></span><span class="k">ア</span><span class="r">a</span></button><button class="cell" data-k="イ" aria-label="イ i"><span class="dot l0"></span><span class="k">イ</span><span class="r">i</span></button><button class="cell" data-k="ウ" aria-label="ウ u"><span class="dot l0"></span><span class="k">ウ</span><span class="r">u</span></button><button class="cell" data-k="エ" aria-label="エ e"><span class="dot l0"></span><span class="k">エ</span><span class="r">e</span></button><button class="cell" data-k="オ" aria-label="オ o"><span class="dot l0"></span><span class="k">オ</span><span class="r">o</span></button><div class="rowhead">k</div><button class="cell" data-k="カ" aria-label="カ ka"><span class="dot l0"></span><span class="k">カ</span><span class="r">ka</span></button><button class="cell" data-k="キ" aria-label="キ ki"><span class="dot l0"></span><span class="k">キ</span><span class="r">ki</span></button><button class="cell" data-k="ク" aria-label="ク ku"><span class="dot l0"></span><span class="k">ク</span><span class="r">ku</span></button><button class="cell" data-k="ケ" aria-label="ケ ke"><span class="dot l0"></span><span class="k">ケ</span><span class="r">ke</span></button><button class="cell" data-k="コ" aria-label="コ ko"><span class="dot l0"></span><span class="k">コ</span><span class="r">ko</span></button><div class="rowhead">s</div><button class="cell" data-k="サ" aria-label="サ sa"><span class="dot l0"></span><span class="k">サ</span><span class="r">sa</span></button><button class="cell" data-k="シ" aria-label="シ shi"><span class="dot l0"></span><span class="k">シ</span><span class="r">shi</span></button><button class="cell" data-k="ス" aria-label="ス su"><span class="dot l0"></span><span class="k">ス</span><span class="r">su</span></button><button class="cell" data-k="セ" aria-label="セ se"><span class="dot l0"></span><span class="k">セ</span><span class="r">se</span></button><button class="cell" data-k="ソ" aria-label="ソ so"><span class="dot l0"></span><span class="k">ソ</span><span class="r">so</span></button><div class="rowhead">t</div><button class="cell" data-k="タ" aria-label="タ ta"><span class="dot l0"></span><span class="k">タ</span><span class="r">ta</span></button><button class="cell" data-k="チ" aria-label="チ chi"><span class="dot l0"></span><span class="k">チ</span><span class="r">chi</span></button><button class="cell" data-k="ツ" aria-label="ツ tsu"><span class="dot l0"></span><span class="k">ツ</span><span class="r">tsu</span></button><button class="cell" data-k="テ" aria-label="テ te"><span class="dot l0"></span><span class="k">テ</span><span class="r">te</span></button><button class="cell" data-k="ト" aria-label="ト to"><span class="dot l0"></span><span class="k">ト</span><span class="r">to</span></button><div class="rowhead">n</div><button class="cell" data-k="ナ" aria-label="ナ na"><span class="dot l0"></span><span class="k">ナ</span><span class="r">na</span></button><button class="cell" data-k="ニ" aria-label="ニ ni"><span class="dot l0"></span><span class="k">ニ</span><span class="r">ni</span></button><button class="cell" data-k="ヌ" aria-label="ヌ nu"><span class="dot l0"></span><span class="k">ヌ</span><span class="r">nu</span></button><button class="cell" data-k="ネ" aria-label="ネ ne"><span class="dot l0"></span><span class="k">ネ</span><span class="r">ne</span></button><button class="cell" data-k="ノ" aria-label="ノ no"><span class="dot l0"></span><span class="k">ノ</span><span class="r">no</span></button><div class="rowhead">h</div><button class="cell" data-k="ハ" aria-label="ハ ha"><span class="dot l0"></span><span class="k">ハ</span><span class="r">ha</span></button><button class="cell" data-k="ヒ" aria-label="ヒ hi"><span class="dot l0"></span><span class="k">ヒ</span><span class="r">hi</span></button><button class="cell" data-k="フ" aria-label="フ fu"><span class="dot l0"></span><span class="k">フ</span><span class="r">fu</span></button><button class="cell" data-k="ヘ" aria-label="ヘ he"><span class="dot l0"></span><span class="k">ヘ</span><span class="r">he</span></button><button class="cell" data-k="ホ" aria-label="ホ ho"><span class="dot l0"></span><span class="k">ホ</span><span class="r">ho</span></button><div class="rowhead">m</div><button class="cell" data-k="マ" aria-label="マ ma"><span class="dot l0"></span><span class="k">マ</span><span class="r">ma</span></button><button class="cell" data-k="ミ" aria-label="ミ mi"><span class="dot l0"></span><span class="k">ミ</span><span class="r">mi</span></button><button class="cell" data-k="ム" aria-label="ム mu"><span class="dot l0"></span><span class="k">ム</span><span class="r">mu</span></button><button class="cell" data-k="メ" aria-label="メ me"><span class="dot l0"></span><span class="k">メ</span><span class="r">me</span></button><button class="cell" data-k="モ" aria-label="モ mo"><span class="dot l0"></span><span class="k">モ</span><span class="r">mo</span></button><div class="rowhead">y</div><button class="cell" data-k="ヤ" aria-label="ヤ ya"><span class="dot l0"></span><span class="k">ヤ</span><span class="r">ya</span></button><div class="empty" aria-hidden="true"></div><button class="cell" data-k="ユ" aria-label="ユ yu"><span class="dot l0"></span><span class="k">ユ</span><span class="r">yu</span></button><div class="empty" aria-hidden="true"></div><button class="cell" data-k="ヨ" aria-label="ヨ yo"><span class="dot l0"></span><span class="k">ヨ</span><span class="r">yo</span></button><div class="rowhead">r</div><button class="cell" data-k="ラ" aria-label="ラ ra"><span class="dot l0"></span><span class="k">ラ</span><span class="r">ra</span></button><button class="cell" data-k="リ" aria-label="リ ri"><span class="dot l0"></span><span class="k">リ</span><span class="r">ri</span></button><button class="cell" data-k="ル" aria-label="ル ru"><span class="dot l0"></span><span class="k">ル</span><span class="r">ru</span></button><button class="cell" data-k="レ" aria-label="レ re"><span class="dot l0"></span><span class="k">レ</span><span class="r">re</span></button><button class="cell" data-k="ロ" aria-label="ロ ro"><span class="dot l0"></span><span class="k">ロ</span><span class="r">ro</span></button><div class="rowhead">w</div><button class="cell" data-k="ワ" aria-label="ワ wa"><span class="dot l0"></span><span class="k">ワ</span><span class="r">wa</span></button><div class="empty" aria-hidden="true"></div><div class="empty" aria-hidden="true"></div><div class="empty" aria-hidden="true"></div><button class="cell" data-k="ヲ" aria-label="ヲ wo"><span class="dot l0"></span><span class="k">ヲ</span><span class="r">wo</span></button><div class="rowhead"></div><button class="cell" data-k="ン" aria-label="ン n"><span class="dot l0"></span><span class="k">ン</span><span class="r">n</span></button><div class="empty" aria-hidden="true"></div><div class="empty" aria-hidden="true"></div><div class="empty" aria-hidden="true"></div><div class="empty" aria-hidden="true"></div></div>
+      <div class="legend">
+        <span><i style="background:var(--ok)"></i>Dominado</span>
+        <span><i style="background:var(--warn)"></i>Casi</span>
+        <span><i style="background:var(--bad)"></i>Falla mucho</span>
+      </div>
+    </div>
+    <p class="hint" id="tablaHint">Toca una casilla tapada para comprobarla. En «Desordenada» las posiciones cambian cada vez que barajas, así no vale acordarse del sitio, solo del símbolo.</p>
+  </section>
+
+  <section id="v-quiz" class="wrap" style="gap:14px" hidden>
+    <div class="bar">
+      <div class="seg" id="dirSeg">
+        <button data-d="k2r" aria-pressed="true">ア → a</button>
+        <button data-d="r2k">a → ア</button>
+      </div>
+      <div class="score"><span>Aciertos <b id="sc">0</b>/<b id="st">0</b></span><span>Racha <b id="ss">0</b></span></div>
+    </div>
+    <div class="bar">
+      <div class="seg" id="modeSeg">
+        <button data-m="ronda" aria-pressed="true">Ronda (todos, 1 vez)</button>
+        <button data-m="libre">Libre</button>
+      </div>
+      <div class="progress" id="rp"></div>
+    </div>
+    <div class="card" id="quizCard">
+      <div class="prompt" id="prompt"><span id="promptTxt"></span></div>
+      <p class="ask" id="ask"></p>
+      <div class="opts" id="opts"></div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="summary" id="summary" hidden>
+      <div class="label">Ronda terminada</div>
+      <div class="big" id="sumScore"></div>
+      <div id="sumFailWrap"><div class="label" style="margin-bottom:8px">Ha fallado</div><div class="fails" id="sumFails"></div></div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" id="again">Otra ronda, otro orden</button>
+        <button class="btn ghost" id="againFails">Repetir solo las falladas</button>
+      </div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">Filas a practicar</div>
+      <div class="rows" id="rows"></div>
+      <div class="links" style="margin-top:10px">
+        <button class="linkbtn" id="allRows">Todas</button>
+        <button class="linkbtn" id="weakRows">Solo las que más falla</button>
+      </div>
+    </div>
+    <p class="hint">Las que falla salen más a menudo, y las opciones incluyen kana que se parecen (シ/ツ, ソ/ン, ク/ケ/タ, ウ/ワ/フ…).</p>
+    <div class="links">
+      <button class="linkbtn danger" id="reset">Borrar progreso</button>
+      <span id="resetConfirm" hidden>¿Seguro? <button class="linkbtn danger" id="resetYes">Sí, borrar</button> <button class="linkbtn" id="resetNo">Cancelar</button></span>
+    </div>
+  </section>
+</div>
+
+<script>
+document.getElementById('nojs').remove();
+const RAW = [
+  ['', 'アa イi ウu エe オo'],
+  ['k','カka キki クku ケke コko'],
+  ['s','サsa シshi スsu セse ソso'],
+  ['t','タta チchi ツtsu テte トto'],
+  ['n','ナna ニni ヌnu ネne ノno'],
+  ['h','ハha ヒhi フfu ヘhe ホho'],
+  ['m','マma ミmi ムmu メme モmo'],
+  ['y','ヤya _ ユyu _ ヨyo'],
+  ['r','ラra リri ルru レre ロro'],
+  ['w','ワwa _ _ _ ヲwo'],
+  ['','ンn _ _ _ _']
+];
+const ROWS = RAW.map(([lab,s],ri)=>({lab, row:ri, cells:s.split(' ').map(t=>t==='_'?null:{k:t[0],r:t.slice(1),row:ri})}));
+const ALL = ROWS.flatMap(r=>r.cells.filter(Boolean));
+const ROWKEY = ['ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ','ン'];
+const SIM = {'シ':'ツミ','ツ':'シ','ソ':'ンリ','ン':'ソ','ノ':'ソメ','リ':'ソ','ク':'ケタワ','ケ':'クサ','タ':'クヌ','ウ':'ワフ','ワ':'ウクフ','フ':'ワヲ','コ':'ユロエ','ユ':'コヨ','ロ':'コ','エ':'コ','ヌ':'スメ','ス':'ヌヲ','メ':'ヌナ','チ':'テナ','テ':'チ','ナ':'チメ','マ':'ムア','ム':'マ','ア':'マヤ','ル':'レ','レ':'ル','ヲ':'ヨフ','ヨ':'ヲモユ','ラ':'フヲ','セ':'ヤヒ','ヤ':'セカ','ヒ':'セ','ミ':'シ','ネ':'ホ','ホ':'ネオ','オ':'ホ','キ':'サチ','サ':'キ','モ':'ヨ','カ':'ヤ','イ':'ト','ト':'イ','ニ':'コ','ハ':'ヘ','ヘ':'ハ'};
+
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let stats = store.get('k46-stats',{});
+let selRows = store.get('k46-rows', ROWS.map(r=>r.row));
+let dir = store.get('k46-dir','k2r');
+let hideMode = '';
+
+const $ = id=>document.getElementById(id);
+const st = k=>stats[k]||{a:0,c:0};
+function level(k){const s=st(k); if(!s.a) return 0; const acc=s.c/s.a;
+  if(s.a>=3 && acc>=.85) return 3; if(acc>=.6) return 2; return 1;}
+
+/* ---------- Tabla ---------- */
+let order='tabla', mixed=null;
+const cellHTML=c=>`<button class="cell" data-k="${c.k}" aria-label="${c.k} ${c.r}"><span class="dot l${level(c.k)}"></span><span class="k">${c.k}</span><span class="r">${c.r}</span></button>`;
+const EMPTY='<div class="empty" aria-hidden="true"></div>';
+function renderGrid(){
+  const g=$('grid'); g.innerHTML='';
+  g.classList.toggle('mix',order==='mix');
+  if(order==='mix'){
+    if(!mixed) mixed=shuffle(ALL.slice());
+    g.innerHTML = mixed.map(cellHTML).join('') + EMPTY.repeat((5-mixed.length%5)%5);
+  } else {
+    g.insertAdjacentHTML('beforeend','<div></div>'+['a','i','u','e','o'].map(v=>`<div class="colhead">${v}</div>`).join(''));
+    for(const r of ROWS){
+      g.insertAdjacentHTML('beforeend',`<div class="rowhead">${r.lab}</div>`);
+      for(const c of r.cells) g.insertAdjacentHTML('beforeend', c?cellHTML(c):EMPTY);
+    }
+  }
+  const m = ALL.filter(c=>level(c.k)===3).length;
+  $('mastered').innerHTML = `<b>${m}</b>/46 dominados`;
+}
+$('grid').addEventListener('click',e=>{const b=e.target.closest('.cell'); if(b&&hideMode) b.classList.toggle('shown')});
+$('hideSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  hideMode=b.dataset.h;
+  [...$('hideSeg').children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  const s=document.querySelector('.sheet');
+  s.classList.toggle('hide-r',hideMode==='r'); s.classList.toggle('hide-k',hideMode==='k');
+  document.querySelectorAll('.cell.shown').forEach(c=>c.classList.remove('shown'));
+  $('coverAll').hidden = !hideMode;
+});
+$('orderSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  order=b.dataset.o; mixed=null;
+  [...$('orderSeg').children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  $('shuffle').hidden = order!=='mix';
+  renderGrid();
+});
+$('shuffle').onclick=()=>{mixed=null; renderGrid()};
+$('coverAll').onclick=()=>document.querySelectorAll('.cell.shown').forEach(c=>c.classList.remove('shown'));
+
+/* ---------- Quiz ---------- */
+let cur=null, last=null, sess={c:0,t:0,s:0}, locked=false;
+function pool(){const p=ALL.filter(c=>selRows.includes(c.row)); return p.length?p:ALL}
+function weight(c){const s=st(c.k); if(!s.a) return 2.5; const err=(s.a-s.c)/s.a; return 0.6+err*5+(s.a<3?1:0)}
+function pick(){
+  const p=pool().filter(c=>p0(c));
+  function p0(c){return !last||c.k!==last.k||pool().length===1}
+  let tot=p.reduce((a,c)=>a+weight(c),0), x=Math.random()*tot;
+  for(const c of p){x-=weight(c); if(x<=0) return c}
+  return p[p.length-1];
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function distractors(c){
+  const out=new Set();
+  const sims=[...(SIM[c.k]||'')].filter(k=>k!==c.k);
+  if(sims.length) out.add(sims[Math.floor(Math.random()*sims.length)]);
+  const p=shuffle(pool().map(x=>x.k).filter(k=>k!==c.k));
+  const a=shuffle(ALL.map(x=>x.k).filter(k=>k!==c.k));
+  for(const k of [...p,...a]){ if(out.size>=3) break; out.add(k) }
+  return [...out].slice(0,3).map(k=>ALL.find(x=>x.k===k));
+}
+let mode = store.get('k46-mode','ronda'), queue=[], roundTotal=0, roundFails=[], roundOk=0;
+function startRound(list){
+  queue = shuffle((list||pool()).slice()); roundTotal=queue.length; roundFails=[]; roundOk=0;
+  $('summary').hidden=true; $('quizCard').hidden=false; nextQ();
+}
+function restart(){ mode==='ronda' ? startRound() : ($('summary').hidden=true, $('quizCard').hidden=false, $('rp').textContent='', nextQ()) }
+function showSummary(){
+  $('quizCard').hidden=true; $('summary').hidden=false; $('rp').textContent='';
+  $('sumScore').innerHTML = `${roundOk}<small> / ${roundTotal}</small>`;
+  $('sumFailWrap').hidden = !roundFails.length; $('againFails').hidden = !roundFails.length;
+  $('sumFails').innerHTML = roundFails.map(c=>`<span>${c.k}<small>${c.r}</small></span>`).join('');
+}
+$('again').onclick=()=>startRound();
+$('againFails').onclick=()=>startRound(roundFails);
+$('modeSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return; mode=b.dataset.m; store.set('k46-mode',mode); syncMode(); restart();
+});
+function syncMode(){[...$('modeSeg').children].forEach(x=>x.setAttribute('aria-pressed',x.dataset.m===mode))}
+function nextQ(){
+  locked=false;
+  if(mode==='ronda'){
+    if(!queue.length){ showSummary(); return }
+    cur=queue.pop(); $('rp').innerHTML=`<b>${roundTotal-queue.length}</b>/${roundTotal}`;
+  } else cur=pick();
+  last=cur;
+  const opts=shuffle([cur,...distractors(cur)]);
+  const k2r = dir==='k2r';
+  $('prompt').classList.toggle('roma',!k2r);
+  $('promptTxt').textContent = k2r?cur.k:cur.r;
+  $('ask').textContent = k2r?'¿Cómo se lee?':'¿Cuál es?';
+  $('opts').innerHTML = opts.map(o=>`<button class="opt ${k2r?'':'kana'}" data-k="${o.k}">${k2r?o.r:o.k}</button>`).join('');
+  $('fb').textContent=''; $('fb').className='feedback';
+}
+$('opts').addEventListener('click',e=>{
+  const b=e.target.closest('.opt'); if(!b||locked) return; locked=true;
+  const ok=b.dataset.k===cur.k;
+  const s=st(cur.k); s.a++; if(ok) s.c++; stats[cur.k]=s; store.set('k46-stats',stats);
+  sess.t++; if(ok){sess.c++;sess.s++;roundOk++}else{sess.s=0;roundFails.push(cur)}
+  $('sc').textContent=sess.c; $('st').textContent=sess.t; $('ss').textContent=sess.s;
+  [...$('opts').children].forEach(x=>{x.disabled=true; if(x.dataset.k===cur.k) x.classList.add('ok')});
+  if(!ok){ b.classList.add('bad'); const w=ALL.find(x=>x.k===b.dataset.k);
+    $('fb').className='feedback bad'; $('fb').textContent=`Era ${cur.k} = ${cur.r}  ·  ${w.k} es ${w.r}`; }
+  else { $('fb').className='feedback ok'; $('fb').textContent='Bien'; }
+  setTimeout(nextQ, ok?650:1900);
+});
+$('dirSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return; dir=b.dataset.d; store.set('k46-dir',dir); syncDir(); restart();
+});
+function syncDir(){[...$('dirSeg').children].forEach(x=>x.setAttribute('aria-pressed',x.dataset.d===dir))}
+function renderRows(){
+  $('rows').innerHTML = ROWKEY.map((k,i)=>`<button class="chip" data-r="${i}" aria-pressed="${selRows.includes(i)}">${k}</button>`).join('');
+}
+$('rows').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b) return; const r=+b.dataset.r;
+  selRows = selRows.includes(r)? selRows.filter(x=>x!==r) : [...selRows,r];
+  if(!selRows.length) selRows=[r];
+  store.set('k46-rows',selRows); renderRows(); restart();
+});
+$('allRows').onclick=()=>{selRows=ROWS.map(r=>r.row); store.set('k46-rows',selRows); renderRows(); restart()};
+$('weakRows').onclick=()=>{
+  const score=ROWS.map(r=>{const cs=r.cells.filter(Boolean); return {row:r.row, v:cs.reduce((a,c)=>a+(level(c.k)===3?0:1),0)/cs.length}});
+  const weak=score.filter(x=>x.v>=.5).map(x=>x.row);
+  selRows = weak.length?weak:ROWS.map(r=>r.row); store.set('k46-rows',selRows); renderRows(); restart();
+};
+$('reset').onclick=()=>{$('resetConfirm').hidden=false};
+$('resetNo').onclick=()=>{$('resetConfirm').hidden=true};
+$('resetYes').onclick=()=>{stats={}; store.set('k46-stats',stats); sess={c:0,t:0,s:0};
+  ['sc','st','ss'].forEach(i=>$(i).textContent=0); $('resetConfirm').hidden=true; renderGrid(); restart()};
+
+/* ---------- Tabs ---------- */
+function show(v){
+  $('v-tabla').hidden = v!=='tabla'; $('v-quiz').hidden = v!=='quiz';
+  $('tab-tabla').setAttribute('aria-selected',v==='tabla'); $('tab-quiz').setAttribute('aria-selected',v==='quiz');
+  if(v==='tabla') renderGrid();
+  store.set('k46-tab',v);
+}
+$('tab-tabla').onclick=()=>show('tabla'); $('tab-quiz').onclick=()=>show('quiz');
+
+renderGrid(); renderRows(); syncDir(); syncMode(); restart(); show(store.get('k46-tab','tabla'));
+</script>
+
+</body>
+</html>
